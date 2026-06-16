@@ -31,6 +31,5 @@ const portfolioSchema = new Schema({
     versionKey: false
 })
 
-portfolioSchema.index({ userId: 1 })
 
 export const PortfolioModel = model("portfolio", portfolioSchema)

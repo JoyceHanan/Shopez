@@ -45,7 +45,8 @@ const stockSchema = new Schema({
     versionKey: false
 })
 
-stockSchema.index({ symbol: 1 })
+// unique:true on symbol already creates the {symbol:1} index
+// only add the compound text index for search
 stockSchema.index({ name: 'text', symbol: 'text' })
 
 export const StockModel = model("stock", stockSchema)
