@@ -1,6 +1,7 @@
 import exp from 'express'
 import { connect } from 'mongoose'
 import { config } from 'dotenv'
+import { userApp } from './apis/userAPI.js'
 import cookieParser from "cookie-parser"
 import cors from 'cors'
 
@@ -13,7 +14,7 @@ config()
 }))
  app.use(exp.json())
  app.use(cookieParser())
- 
+ app.use("/user-api",userApp)
  const port=process.env.PORT||5000
  const connectionDb=async()=>{
     try{
