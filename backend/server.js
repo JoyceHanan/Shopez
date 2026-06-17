@@ -3,60 +3,57 @@ import { connect } from 'mongoose'
 import { config } from 'dotenv'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import { userApp }      from './apis/userAPI.js'
-import { stockApp }     from './apis/stockAPI.js'
-import { tradeApp }     from './apis/tradeAPI.js'
-import { portfolioApp } from './apis/portfolioAPI.js'
-import { adminApp }     from './apis/adminAPI.js'
+import { userApp }    from './apis/userAPI.js'
+import { productApp } from './apis/productAPI.js'
+import { cartApp }    from './apis/cartAPI.js'
+import { orderApp }   from './apis/orderAPI.js'
+import { adminApp }   from './apis/adminAPI.js'
 
 config()
 
 const app = exp()
 
-// CORS — allow Vite dev server
 app.use(cors({
-    origin: ["http://localhost:5173"],
+    origin: ['http://localhost:5173'],
     credentials: true
 }))
 app.use(exp.json())
 app.use(cookieParser())
 
-// ── API routes ─────────────────────────────────────────────────────────────────
-app.use("/user-api",      userApp)
-app.use("/stock-api",     stockApp)
-app.use("/trade-api",     tradeApp)
-app.use("/portfolio-api", portfolioApp)
-app.use("/admin-api",     adminApp)
+// ── Routes ────────────────────────────────────────────────────────────────────
+app.use('/user-api',    userApp)
+app.use('/product-api', productApp)
+app.use('/cart-api',    cartApp)
+app.use('/order-api',   orderApp)
+app.use('/admin-api',   adminApp)
 
-const port = process.env.PORT || 5000
+// ── 404 ───────────────────────────────────────────────────────────────────────
+app.use((req, res) => {
+    console.log('404:', req.method, req.url)
+    res.status(404).json({ message: 'Route not found' })
+})
 
-const connectionDb = async () => {
+// ── Global error handler ──────────────────────────────────────────────────────
+app.use((err, req, res, next) => {
+    console.log(err.name, err.message)
+    if (err.name === 'ValidationError')
+        return res.status(400).json({ message: 'Validation failed', error: err.message })
+    if (err.name === 'CastError')
+        return res.status(400).json({ message: 'Invalid ID format' })
+    res.status(500).json({ message: 'Internal server error', error: err.message })
+})
+
+// ── DB + Server ───────────────────────────────────────────────────────────────
+const startServer = async () => {
     try {
         await connect(process.env.DB_URL)
-        console.log("MongoDB connected")
-        app.listen(port, () => console.log(`Server running on port ${port}`))
+        console.log('MongoDB connected')
+        const PORT = process.env.PORT || 5000
+        app.listen(PORT, () => console.log(` Server running on port ${PORT}`))
     } catch (err) {
-        console.log(err)
+        console.log(' DB connection failed:', err.message)
+        process.exit(1)
     }
 }
-connectionDb()
 
-// 404 handler
-app.use((req, res, next) => {
-    console.log(req.url)
-    res.status(404).json({ message: "Invalid path" })
-})
-
-// Global error handler
-app.use((err, req, res, next) => {
-    console.log(err.name)
-    console.log(err.message)
-
-    if (err.name === 'ValidationError')
-        return res.status(400).json({ message: "Validation failed", error: err.message })
-
-    if (err.name === 'CastError')
-        return res.status(400).json({ message: "Invalid ID format" })
-
-    res.status(500).json({ message: "Internal server error", error: err.message })
-})
+startServer()
