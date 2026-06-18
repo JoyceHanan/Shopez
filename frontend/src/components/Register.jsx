@@ -1,100 +1,181 @@
-import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router'
-import { useAuthStore } from '../store/authStore'
-import toast from 'react-hot-toast'
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router";
+import { useAuthStore } from "../store/authStore";
+import toast from "react-hot-toast";
 
 function Register() {
-  const [form, setForm] = useState({ name: '', email: '', password: '' })
-  const { register, loading, error, clearError, isAuthenticated } = useAuthStore()
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const {
+    register,
+    loading,
+    error,
+    clearError,
+  } = useAuthStore();
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/dashboard')
-    return () => clearError()
-  }, [isAuthenticated])
+    if (error) {
+      toast.error(error);
+      clearError();
+    }
+  }, [error, clearError]);
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+
+    if (
+      !form.username ||
+      !form.email ||
+      !form.password ||
+      !form.confirmPassword
+    ) {
+      toast.error("All fields are required");
+      return;
+    }
+
     if (form.password.length < 6) {
-      toast.error('Password must be at least 6 characters')
-      return
+      toast.error(
+        "Password must be at least 6 characters"
+      );
+      return;
     }
-    const res = await register(form)
-    if (res) {
-      toast.success('Account created! Please log in.')
-      navigate('/login')
-    } else {
-      toast.error(error || 'Registration failed')
+
+    if (
+      form.password !== form.confirmPassword
+    ) {
+      toast.error(
+        "Passwords do not match"
+      );
+      return;
     }
-  }
+
+    const result = await register({
+      username: form.username,
+      email: form.email,
+      password: form.password,
+    });
+
+    if (result) {
+      toast.success(
+        "Registration successful. Please login."
+      );
+
+      navigate("/login");
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Create account</h1>
-          <p className="text-slate-400">Get ₹1,00,000 virtual balance to start trading</p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-center mb-2">
+          Create Account
+        </h1>
 
-        <div className="p-8 rounded-2xl border border-slate-800 bg-slate-900">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Full Name</label>
-              <input
-                type="text"
-                required
-                value={form.name}
-                onChange={e => setForm({ ...form, name: e.target.value })}
-                placeholder="John Doe"
-                className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
-              />
-            </div>
+        <p className="text-gray-500 text-center mb-8">
+          Join StyleHub today
+        </p>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
-              <input
-                type="email"
-                required
-                value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })}
-                placeholder="you@example.com"
-                className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
-              />
-            </div>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5"
+        >
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Username
+            </label>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
-              <input
-                type="password"
-                required
-                value={form.password}
-                onChange={e => setForm({ ...form, password: e.target.value })}
-                placeholder="Min. 6 characters"
-                className="w-full px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
-              />
-            </div>
+            <input
+              type="text"
+              name="username"
+              value={form.username}
+              onChange={handleChange}
+              placeholder="Enter username"
+              className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
 
-            {error && (
-              <p className="text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">{error}</p>
-            )}
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Email
+            </label>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 rounded-lg bg-sky-500 hover:bg-sky-400 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-colors"
-            >
-              {loading ? 'Creating account…' : 'Create Account'}
-            </button>
-          </form>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Enter email"
+              className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
 
-          <p className="text-center text-sm text-slate-500 mt-6">
-            Already have an account?{' '}
-            <Link to="/login" className="text-sky-400 hover:underline">Sign in</Link>
-          </p>
-        </div>
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Password
+            </label>
+
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Enter password"
+              className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 text-sm font-medium">
+              Confirm Password
+            </label>
+
+            <input
+              type="password"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm password"
+              className="w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            {loading
+              ? "Creating Account..."
+              : "Register"}
+          </button>
+        </form>
+
+        <p className="text-center mt-6 text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="font-semibold text-black"
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default Register
+export default Register;

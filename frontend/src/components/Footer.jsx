@@ -1,16 +1,96 @@
+import { Link } from "react-router-dom";
+
 function Footer() {
   return (
-    <footer className="border-t border-slate-800 bg-slate-900 py-8 mt-16">
-      <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
-        <div className="flex items-center gap-2 font-semibold text-slate-400">
-          <span>📈</span>
-          <span>ShopezTrade</span>
+    <footer className="bg-black text-white mt-auto">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid md:grid-cols-4 gap-8">
+          
+          {/* Brand */}
+          <div>
+            <h2 className="text-2xl font-bold mb-4">
+              StyleHub
+            </h2>
+
+            <p className="text-gray-400 text-sm">
+              Discover premium fashion for men,
+              women and kids. Shop quality products
+              at affordable prices.
+            </p>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="font-semibold mb-4">
+              Quick Links
+            </h3>
+
+            <div className="flex flex-col gap-2 text-gray-400">
+              <Link
+                to="/"
+                className="hover:text-white"
+              >
+                Home
+              </Link>
+
+              <Link
+                to="/dashboard"
+                className="hover:text-white"
+              >
+                Dashboard
+              </Link>
+
+              <Link
+                to="/cart"
+                className="hover:text-white"
+              >
+                Cart
+              </Link>
+
+              <Link
+                to="/profile"
+                className="hover:text-white"
+              >
+                Profile
+              </Link>
+            </div>
+          </div>
+
+          {/* Categories */}
+          <div>
+            <h3 className="font-semibold mb-4">
+              Categories
+            </h3>
+
+            <div className="flex flex-col gap-2 text-gray-400">
+              <p>Men</p>
+              <p>Women</p>
+              <p>Kids</p>
+              <p>Accessories</p>
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="font-semibold mb-4">
+              Contact
+            </h3>
+
+            <div className="flex flex-col gap-2 text-gray-400">
+              <p>support@stylehub.com</p>
+              <p>+91 9876543210</p>
+              <p>Hyderabad, India</p>
+            </div>
+          </div>
         </div>
-        <p>Virtual stock trading platform — all balances and trades are simulated.</p>
-        <p>© {new Date().getFullYear()} ShopezTrade</p>
+
+        <div className="border-t border-gray-800 mt-8 pt-6 text-center text-sm text-gray-500">
+          © {new Date().getFullYear()} StyleHub.
+          All Rights Reserved.
+        </div>
       </div>
     </footer>
-  )
+  );
 }
 
-export default Footer
+export default Footer;
