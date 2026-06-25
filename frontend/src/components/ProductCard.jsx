@@ -1,7 +1,7 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useAuthStore } from "../store/authStore";
 import { useCartStore } from "../store/cartStore";
-import "./index.css";
+import "../index.css";
 
 // Drop this into Home.jsx (or wherever the product catalog renders)
 // for each product returned by productAPI

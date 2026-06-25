@@ -1,5 +1,5 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import "./index.css";
+import { useLocation, useNavigate } from "react-router";
+import "../index.css";
 
 const OrderConfirmation = () => {
   const { state } = useLocation();

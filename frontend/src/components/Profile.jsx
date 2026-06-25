@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/authStore";
 import api from "../utils/axios";
-import "./index.css";
+import "../index.css";
 
 // If Dashboard.jsx already covers profile/order-history, merge this logic
 // in there instead of using both components.

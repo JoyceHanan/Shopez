@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { useAuthStore } from "../store/authStore";
 import { useCartStore } from "../store/cartStore";
 import api from "../utils/axios";
-import "./index.css";
+import "../index.css";
 
 // Reached either from ProductCard's "Shop Now" (directBuy: true, single item)
 // or from Cart's "Proceed to Checkout" (directBuy: false, full cart)
