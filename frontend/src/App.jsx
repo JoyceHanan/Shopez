@@ -1,17 +1,19 @@
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { Toaster } from 'react-hot-toast'
-import RootLayout  from './components/RootLayout'
-import Home        from './components/Home'
-import Login       from './components/Login'
-import Register    from './components/Register'
-import Products    from './components/Products'
+import RootLayout    from './components/RootLayout'
+import Home          from './components/Home'
+import Login         from './components/Login'
+import Register      from './components/Register'
+import Products      from './components/Products'
 import ProductDetail from './components/ProductDetail'
-import Cart        from './components/Cart'
-import Checkout    from './components/Checkout'
-import MyOrders    from './components/MyOrders'
-import AdminPanel  from './components/AdminPanel'
+import Cart          from './components/Cart'
+import Checkout      from './components/Checkout'
+import MyOrders      from './components/MyOrders'
+import Dashboard     from './components/Dashboard'
+import Profile       from './components/Profile'
+import AdminPanel    from './components/AdminPanel'
 import './App.css'
-
+import './index.css'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -25,6 +27,8 @@ const router = createBrowserRouter([
       { path: 'cart',          element: <Cart /> },
       { path: 'checkout',      element: <Checkout /> },
       { path: 'my-orders',     element: <MyOrders /> },
+      { path: 'dashboard',     element: <Dashboard /> },
+      { path: 'profile',       element: <Profile /> },
       { path: 'admin',         element: <AdminPanel /> },
     ]
   }

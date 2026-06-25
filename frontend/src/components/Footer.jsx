@@ -1,25 +1,9 @@
-import Header from './Header'
-import Footer from './Footer'
-import { Outlet } from 'react-router'
-import { useEffect } from 'react'
-import { useAuthStore } from '../store/authStore'
-
-function RootLayout() {
-  const checkAuth = useAuthStore(state => state.checkAuth)
-
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
+function Footer() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <Header />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
+    <footer className="bg-slate-800 text-slate-400 text-sm py-6 text-center">
+      <p>© {new Date().getFullYear()} Shopez. All rights reserved.</p>
+    </footer>
   )
 }
 
-export default RootLayout
+export default Footer
