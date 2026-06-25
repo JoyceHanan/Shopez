@@ -1,136 +1,115 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import axios from "axios";
-import toast from "react-hot-toast";
+import { Link } from 'react-router'
+import { useAuthStore } from '../store/authStore'
+
+const FEATURES = [
+  { icon: '👗', title: 'Trendy Fashion', desc: 'Explore the latest styles for Men, Women, and Kids across all categories.' },
+  { icon: '💸', title: 'Best Prices', desc: 'Enjoy huge discounts and deals on top clothing brands every day.' },
+  { icon: '🚚', title: 'Fast Delivery', desc: 'Get your orders delivered in 5 days with real-time tracking.' },
+  { icon: '🔒', title: 'Secure Shopping', desc: 'Shop with confidence — your payments and data are always protected.' },
+]
+
+const CATEGORIES = [
+  { label: 'Shirts', icon: '👔', gender: 'Men' },
+  { label: 'Dresses', icon: '👗', gender: 'Women' },
+  { label: 'Jeans', icon: '👖', gender: 'Men' },
+  { label: 'Footwear', icon: '👟', gender: 'Unisex' },
+  { label: 'Hoodies', icon: '🧥', gender: 'Unisex' },
+  { label: 'Bags', icon: '👜', gender: 'Women' },
+]
 
 function Home() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchProducts = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/product-api"
-      );
-
-      setProducts(res.data.payload || []);
-    } catch (err) {
-      toast.error("Failed to load products");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  const { isAuthenticated } = useAuthStore()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-
-      <section className="bg-black text-white py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <h1 className="text-5xl font-bold mb-4">
-            Welcome to StyleHub
+    <div className="min-h-screen">
+      {/* Hero */}
+      <section className="relative overflow-hidden py-24 px-4 bg-gradient-to-br from-orange-50 to-amber-50">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 border border-orange-200 text-orange-600 text-sm mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+            New Collection Available
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
+            Style That Speaks,<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">
+              Prices That Please
+            </span>
           </h1>
-
-          <p className="text-gray-300 text-lg max-w-2xl">
-            Discover premium fashion for men,
-            women and kids. Shop the latest
-            trends with amazing offers.
+          <p className="text-lg text-slate-500 mb-10 max-w-2xl mx-auto">
+            Discover the latest fashion trends for every occasion. From casual wear to
+            formal attire — find your perfect style at Shopez.
           </p>
-
-          <button className="mt-8 px-6 py-3 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition">
-            Shop Now
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link
+              to="/products"
+              className="px-8 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-semibold text-lg transition-all shadow-lg shadow-orange-200"
+            >
+              Shop Now →
+            </Link>
+            {!isAuthenticated && (
+              <Link
+                to="/register"
+                className="px-8 py-3 rounded-xl border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold text-lg transition-all"
+              >
+                Create Account
+              </Link>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Products */}
-
-      <section className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold">
-            Latest Products
-          </h2>
+      {/* Categories */}
+      <section className="py-16 px-4">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-800 text-center mb-10">Shop by Category</h2>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+            {CATEGORIES.map(c => (
+              <Link
+                key={c.label}
+                to={`/products?category=${c.label}`}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl border border-slate-200 bg-white hover:border-orange-300 hover:shadow-md transition-all group"
+              >
+                <span className="text-3xl group-hover:scale-110 transition-transform">{c.icon}</span>
+                <span className="text-sm font-medium text-slate-700">{c.label}</span>
+              </Link>
+            ))}
+          </div>
         </div>
-
-        {loading ? (
-          <div className="text-center py-20">
-            Loading products...
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center py-20">
-            No products found
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => {
-              const finalPrice =
-                product.price -
-                (product.price * product.discount) /
-                  100;
-
-              return (
-                <div
-                  key={product._id}
-                  className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden"
-                >
-                  <img
-                    src={product.mainImg}
-                    alt={product.title}
-                    className="w-full h-64 object-cover"
-                  />
-
-                  <div className="p-4">
-                    <h3 className="font-semibold text-lg line-clamp-1">
-                      {product.title}
-                    </h3>
-
-                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                      {product.description}
-                    </p>
-
-                    <div className="flex items-center gap-3 mt-3">
-                      <span className="font-bold text-lg">
-                        ₹{finalPrice}
-                      </span>
-
-                      {product.discount > 0 && (
-                        <>
-                          <span className="line-through text-gray-400">
-                            ₹{product.price}
-                          </span>
-
-                          <span className="text-green-600 text-sm font-semibold">
-                            {product.discount}% OFF
-                          </span>
-                        </>
-                      )}
-                    </div>
-
-                    <div className="mt-4">
-                      <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                        {product.category}
-                      </span>
-                    </div>
-
-                    <Link
-                      to={`/product/${product._id}`}
-                      className="block mt-4 w-full text-center bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition"
-                    >
-                      View Product
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
       </section>
+
+      {/* Features */}
+      <section className="py-16 px-4 bg-white border-y border-slate-100">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-800 text-center mb-10">Why Choose Shopez?</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {FEATURES.map(f => (
+              <div key={f.title} className="p-6 rounded-2xl border border-slate-100 bg-slate-50 hover:border-orange-200 transition-colors group">
+                <div className="text-3xl mb-4">{f.icon}</div>
+                <h3 className="font-semibold text-slate-800 mb-2 group-hover:text-orange-500 transition-colors">{f.title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      {!isAuthenticated && (
+        <section className="py-16 px-4">
+          <div className="max-w-2xl mx-auto text-center p-10 rounded-3xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-xl shadow-orange-200">
+            <h2 className="text-2xl font-bold mb-3">Ready to Shop?</h2>
+            <p className="text-orange-100 mb-6">Create your free account and start exploring thousands of products.</p>
+            <Link
+              to="/register"
+              className="inline-block px-8 py-3 rounded-xl bg-white text-orange-500 font-semibold hover:bg-orange-50 transition-all"
+            >
+              Get Started Free
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
-  );
+  )
 }
 
-export default Home;
+export default Home

@@ -1,52 +1,63 @@
-import { create } from "zustand";
-import api from "../utils/axios";
+import { create } from 'zustand'
+import axios from 'axios'
 
-// Mirrors the pattern used in authStore.js
-// Talks to cartAPI.js on the backend (cart items are keyed by userId)
 export const useCartStore = create((set) => ({
   items: [],
+  subtotal: 0,
+  totalItems: 0,
   loading: false,
+  error: null,
 
-  fetchCart: async (userId) => {
-    set({ loading: true });
+  fetchCart: async () => {
     try {
-      const res = await api.get(`/cart/${userId}`);
-      set({ items: res.data.items || res.data || [], loading: false });
+      set({ loading: true, error: null })
+      const res = await axios.get('/cart-api/')
+      set({ items: res.data.payload, subtotal: res.data.subtotal, totalItems: res.data.totalItems, loading: false })
     } catch (err) {
-      console.error("Failed to fetch cart:", err);
-      set({ loading: false });
+      set({ loading: false, error: err.response?.data?.message || 'Failed to fetch cart' })
     }
   },
 
-  addToCart: async (userId, product, quantity = 1) => {
+  addToCart: async ({ productId, size, quantity = 1 }) => {
     try {
-      const res = await api.post(`/cart/${userId}`, {
-        productId: product._id,
-        quantity,
-      });
-      set({ items: res.data.items || res.data });
+      const res = await axios.post('/cart-api/add', { productId, size, quantity })
+      return { success: true, data: res.data }
     } catch (err) {
-      console.error("Failed to add to cart:", err);
+      return { success: false, message: err.response?.data?.message || 'Failed to add to cart' }
     }
   },
 
-  updateQuantity: async (userId, productId, quantity) => {
+  updateQuantity: async (itemId, quantity) => {
     try {
-      const res = await api.put(`/cart/${userId}`, { productId, quantity });
-      set({ items: res.data.items || res.data });
-    } catch (err) {
-      console.error("Failed to update cart quantity:", err);
+      const res = await axios.put(`/cart-api/${itemId}`, { quantity })
+      set(state => ({
+        items: state.items.map(i => i._id === itemId ? res.data.payload : i)
+      }))
+      return true
+    } catch {
+      return false
     }
   },
 
-  removeFromCart: async (userId, productId) => {
+  removeFromCart: async (itemId) => {
     try {
-      const res = await api.delete(`/cart/${userId}/${productId}`);
-      set({ items: res.data.items || res.data });
-    } catch (err) {
-      console.error("Failed to remove item from cart:", err);
+      await axios.delete(`/cart-api/${itemId}`)
+      set(state => ({ items: state.items.filter(i => i._id !== itemId) }))
+      return true
+    } catch {
+      return false
     }
   },
 
-  clearCart: () => set({ items: [] }),
-}));
+  clearCart: async () => {
+    try {
+      await axios.delete('/cart-api/')
+      set({ items: [], subtotal: 0, totalItems: 0 })
+      return true
+    } catch {
+      return false
+    }
+  },
+
+  clearError: () => set({ error: null }),
+}))
