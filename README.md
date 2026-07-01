@@ -2,7 +2,7 @@
 
 Shopez is a full-stack clothing e-commerce web application built with React 19 on the frontend and Node.js/Express 5 on the backend, using MongoDB as the database. It supports user authentication, product browsing, cart management, order placement, and a dedicated admin panel.
 
----
+-----
 
 ## 📁 Project Structure
 
